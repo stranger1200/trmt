@@ -1,23 +1,15 @@
 package milkucha.trmt.client.render;
 
-import net.fabricmc.fabric.api.client.model.loading.v1.ModelLoadingPlugin;
-import net.minecraft.client.resources.model.ModelIdentifier;
-
 public final class ErodedGrassBlockModels {
 
     private ErodedGrassBlockModels() {}
 
     public static void register() {
-        ModelLoadingPlugin.register(pluginContext ->
-            pluginContext.modifyModelAfterBake().register((model, context) -> {
-                ModelIdentifier mid = context.topLevelId();
-                if (mid != null
-                        && "trmt".equals(mid.id().getNamespace())
-                        && "eroded_grass_block".equals(mid.id().getPath())) {
-                    return new ErodedGrassBlockModel(model);
-                }
-                return model;
-            })
-        );
+        // TODO(26.1): Re-implement custom BakedModel wrapping for cutout grass overlay.
+        // The pre-26.1 implementation used Fabric's renderer-api-v1 (RendererAccess,
+        // BlendMode, RenderMaterial, RenderContext) plus FabricBakedModel. Those APIs
+        // were removed in the 26.1 client rendering rework. Until a 26.1-compatible
+        // path is wired up, the eroded grass block uses its vanilla blockstate model
+        // with a JSON-side render_type=cutout_mipped (declared in the model files).
     }
 }

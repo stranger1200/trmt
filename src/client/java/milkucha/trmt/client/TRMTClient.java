@@ -1,7 +1,6 @@
 package milkucha.trmt.client;
 
 import milkucha.trmt.TRMT;
-import milkucha.trmt.TRMTBlocks;
 import milkucha.trmt.client.debug.ErosionDebugHud;
 import milkucha.trmt.client.network.ClientErosionCache;
 import milkucha.trmt.client.render.ErodedGrassBlockModels;
@@ -10,14 +9,10 @@ import milkucha.trmt.network.UpdateStagePayload;
 import milkucha.trmt.network.VersionCheckPayload;
 import milkucha.trmt.network.VersionResponsePayload;
 import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.client.networking.v1.ClientConfigurationNetworking;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.client.renderer.BiomeColors;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.ChunkPos;
 
@@ -38,13 +33,13 @@ public class TRMTClient implements ClientModInitializer {
 		});
 
 		ErodedGrassBlockModels.register();
-		BlockRenderLayerMap.INSTANCE.putBlock(TRMTBlocks.ERODED_GRASS_BLOCK, RenderType.cutoutMipped());
-		ColorProviderRegistry.BLOCK.register(
-				(state, world, pos, tintIndex) -> world != null && pos != null
-						? BiomeColors.getAverageGrassColor(world, pos)
-						: 0x79C05A,
-				TRMTBlocks.ERODED_GRASS_BLOCK
-		);
+		// TODO(26.1): Re-register block render layer (cutout_mipped) for ERODED_GRASS_BLOCK.
+		// Pre-26.1 used BlockRenderLayerMap (removed). The 26.1 path is data-driven via
+		// model JSON `render_type` — declared in assets/trmt/models/block/eroded_grass_block_*.json.
+		// TODO(26.1): Re-register biome-tinted block color provider for ERODED_GRASS_BLOCK.
+		// Pre-26.1 used ColorProviderRegistry.BLOCK (removed in Fabric API 0.148.0+26.1.2).
+		// Without it the eroded grass block uses a flat fallback color (0x79C05A) where
+		// any tintIndex is referenced; biome-aware tinting needs the new color registry.
 		ErosionDebugHud.register();
 
 		// Full chunk sync received on join.
