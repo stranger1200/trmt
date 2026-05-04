@@ -51,7 +51,7 @@ public abstract class DisconnectedScreenMixin extends Screen {
 
     // initTabNavigation() is called after init() and after every resize (via clearAndInit).
     // By this point the layout has set final positions, so we correct our button here.
-    @Inject(method = "initTabNavigation()V", at = @At("TAIL"))
+    @Inject(method = "repositionElements()V", at = @At("TAIL"))
     private void trmt$repositionUpdateButton(CallbackInfo ci) {
         if (trmt$downloadButton == null || trmt$backButton == null) return;
         trmt$downloadButton.setPosition(trmt$backButton.getX(), trmt$backButton.getY() + 25);

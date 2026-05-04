@@ -1,6 +1,7 @@
 package milkucha.trmt.client;
 
 import milkucha.trmt.TRMT;
+import milkucha.trmt.TRMTBlocks;
 import milkucha.trmt.client.debug.ErosionDebugHud;
 import milkucha.trmt.client.network.ClientErosionCache;
 import milkucha.trmt.client.render.ErodedGrassBlockModels;
@@ -9,12 +10,16 @@ import milkucha.trmt.network.UpdateStagePayload;
 import milkucha.trmt.network.VersionCheckPayload;
 import milkucha.trmt.network.VersionResponsePayload;
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientConfigurationNetworking;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.client.color.block.BlockTintSources;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.ChunkPos;
+
+import java.util.List;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -33,13 +38,19 @@ public class TRMTClient implements ClientModInitializer {
 		});
 
 		ErodedGrassBlockModels.register();
-		// TODO(26.1): Re-register block render layer (cutout_mipped) for ERODED_GRASS_BLOCK.
-		// Pre-26.1 used BlockRenderLayerMap (removed). The 26.1 path is data-driven via
-		// model JSON `render_type` — declared in assets/trmt/models/block/eroded_grass_block_*.json.
-		// TODO(26.1): Re-register biome-tinted block color provider for ERODED_GRASS_BLOCK.
-		// Pre-26.1 used ColorProviderRegistry.BLOCK (removed in Fabric API 0.148.0+26.1.2).
-		// Without it the eroded grass block uses a flat fallback color (0x79C05A) where
-		// any tintIndex is referenced; biome-aware tinting needs the new color registry.
+		// Cutout layer is declared data-side via render_type=cutout_mipped in
+		// assets/trmt/models/block/eroded_grass_block_*.json (replaces pre-26.1
+		// BlockRenderLayerMap.INSTANCE.putBlock).
+		// Biome-tinted grass color: register the vanilla grass-block tint source
+		// against our eroded grass block (replaces pre-26.1 ColorProviderRegistry).
+		// Registered via CLIENT_STARTED because Minecraft#blockColors is null
+		// during onInitializeClient.
+		ClientLifecycleEvents.CLIENT_STARTED.register(client ->
+				client.getBlockColors().register(
+						List.of(BlockTintSources.grassBlock()),
+						TRMTBlocks.ERODED_GRASS_BLOCK
+				)
+		);
 		ErosionDebugHud.register();
 
 		// Full chunk sync received on join.

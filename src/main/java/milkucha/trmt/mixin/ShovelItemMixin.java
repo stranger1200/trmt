@@ -27,7 +27,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(ShovelItem.class)
 public class ShovelItemMixin {
 
-    @Inject(method = "useOnBlock", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "useOn", at = @At("HEAD"), cancellable = true)
     private void trmt$flattenErodedBlocks(UseOnContext context, CallbackInfoReturnable<InteractionResult> cir) {
         BlockPos pos = context.getClickedPos();
         Level world = context.getLevel();

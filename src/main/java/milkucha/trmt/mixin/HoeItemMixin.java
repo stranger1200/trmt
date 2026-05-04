@@ -28,7 +28,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(HoeItem.class)
 public class HoeItemMixin {
 
-    @Inject(method = "useOnBlock", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "useOn", at = @At("HEAD"), cancellable = true)
     private void trmt$tillErodedBlocks(UseOnContext context, CallbackInfoReturnable<InteractionResult> cir) {
         BlockPos pos = context.getClickedPos();
         Level world = context.getLevel();
