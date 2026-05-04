@@ -1,7 +1,7 @@
 package milkucha.trmt.client.render;
 
 import net.fabricmc.fabric.api.client.model.loading.v1.ModelLoadingPlugin;
-import net.minecraft.client.util.ModelIdentifier;
+import net.minecraft.client.resources.model.ModelIdentifier;
 
 public final class ErodedGrassBlockModels {
 
